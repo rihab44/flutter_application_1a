@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'produit.dart';
+import 'ajoututulisateur.dart';
 
 class page1 extends StatelessWidget {
   @override
@@ -15,7 +16,49 @@ class page1 extends StatelessWidget {
                 color: Color.fromARGB(255, 255, 255, 255),
                 fontSize: 36,
               ))),
-      body: Container(
+              drawer : Drawer(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children:<Widget> [
+                    ListTile(
+                      leading: Icon(Icons.add),
+                      title: Text('ajouter un utulisateur'),
+                      onTap: (){
+                        Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>ajout()),
+                );
+                      },
+                    ),
+                    ListTile(
+                   leading: Icon(Icons.person),
+                      title: Text('liste des utulisateurs'),  
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.add),
+                      title: Text('ajouter un produit'),
+                      onTap: (){
+                        Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>AddProductScreen()),
+                );
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.logout),
+                      title: Text('deconnexion'),
+                      onTap: (){
+                        Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>loginpage()),
+                );
+                      },
+                    )
+
+                  ],
+                 ),
+              )
+      ,body: Container(
         padding: EdgeInsets.all(30.0),
         child: GridView.count(crossAxisCount: 2, children: <Widget>[
           Card(
@@ -68,7 +111,7 @@ class page1 extends StatelessWidget {
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "ajouter un nouvel produit ",
+                      "gestion des commandes ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
