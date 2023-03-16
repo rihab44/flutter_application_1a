@@ -139,6 +139,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.0"
+  modal_progress_hud:
+    dependency: "direct main"
+    description:
+      name: modal_progress_hud
+      sha256: "798a0e3cc23a23a328d62d673b59bd17bf56f470e35281a3fc38c1db8ae053da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   path:
     dependency: transitive
     description:
@@ -147,6 +155,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.2"
+  progress_hud:
+    dependency: "direct main"
+    description:
+      name: progress_hud
+      sha256: c7a79d70d278328cf3b0732c119a89ba96329825deb03b5dd64415c77dfb8ac4
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   sky_engine:
     dependency: transitive
     description: flutter

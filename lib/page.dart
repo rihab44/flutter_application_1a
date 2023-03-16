@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'produit.dart';
 import 'ajoututulisateur.dart';
+import 'produitliste.dart';
 
 class page1 extends StatelessWidget {
   @override
@@ -9,12 +10,12 @@ class page1 extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-          toolbarHeight: 100,
+          elevation: 0,
           backgroundColor: Colors.purple,
-          title: Text('Aceuil',
+          title: Text('accueil',
               style: TextStyle(
                 color: Color.fromARGB(255, 255, 255, 255),
-                fontSize: 36,
+                fontSize: 30,
               ))),
               drawer : Drawer(
                 child: ListView(
@@ -34,6 +35,12 @@ class page1 extends StatelessWidget {
                    leading: Icon(Icons.person),
                       title: Text('liste des utulisateurs'),  
                     ),
+                     ListTile(
+                   leading: Icon(Icons.list),
+                      title: Text('gestion des projets'),  
+                    ),
+                    
+                    
                     ListTile(
                       leading: Icon(Icons.add),
                       title: Text('ajouter un produit'),
@@ -62,12 +69,12 @@ class page1 extends StatelessWidget {
         padding: EdgeInsets.all(30.0),
         child: GridView.count(crossAxisCount: 2, children: <Widget>[
           Card(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => page1()),
+                  MaterialPageRoute(builder: (context) => ProductListView()),
                 );
               },
               splashColor: Colors.purple,
@@ -77,7 +84,7 @@ class page1 extends StatelessWidget {
                   children: <Widget>[
                     Icon(
                       Icons.source,
-                      size: 70.0,
+                      size: 60.0,
                       color: Colors.deepPurple,
                     ),
                     Text(
@@ -90,7 +97,7 @@ class page1 extends StatelessWidget {
             ),
           ),
           Card(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -107,11 +114,11 @@ class page1 extends StatelessWidget {
                   children: <Widget>[
                     Icon(
                       Icons.add_shopping_cart,
-                      size: 70.0,
+                      size: 60.0,
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "gestion des commandes ",
+                      "   gestion des commandes ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
@@ -120,7 +127,7 @@ class page1 extends StatelessWidget {
             ),
           ),
           Card(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -135,11 +142,11 @@ class page1 extends StatelessWidget {
                   children: <Widget>[
                     Icon(
                       Icons.trending_up,
-                      size: 70.0,
+                      size: 60.0,
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "voir la tracabilité du produitt ",
+                      "voir la tracabilité des produitt ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
@@ -148,7 +155,7 @@ class page1 extends StatelessWidget {
             ),
           ),
           Card(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -163,11 +170,11 @@ class page1 extends StatelessWidget {
                   children: <Widget>[
                     Icon(
                       Icons.production_quantity_limits,
-                      size: 70.0,
+                      size: 60.0,
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "traffic  ",
+                      "gestion de traffic  ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
@@ -176,7 +183,7 @@ class page1 extends StatelessWidget {
             ),
           ),
           Card(
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -191,11 +198,11 @@ class page1 extends StatelessWidget {
                   children: <Widget>[
                     Icon(
                       Icons.description,
-                      size: 70.0,
+                      size: 60.0,
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      " les projets ",
+                      "  voir les projets ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
