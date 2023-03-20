@@ -1,32 +1,49 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
-import 'authservice.dart';
 
 class user {
-  late String? nom;
-  late String? email;
-  late double? numero;
-  late String? motdepasse;
-  user({
-    this.nom,
-    this.email,
-    this.numero,
-    this.motdepasse,
-  });
-  factory user.fromJson(Map<String, dynamic> json) {
-    return user(
-      nom: json['nom'] as String?,
-      email: json['email'] as String?,
-      numero: json['numero'] as double?,
-      motdepasse: json['motdepasse'] as String?,
-    );
+  String nom;
+  String email;
+  double numero;
+
+  String password;
+
+  user(this.nom, this.email, this.numero, this.password);
+  Map<String, dynamic> toJson() {
+    return {
+      'nom': this.nom,
+      'email': this.email,
+      'numero': this.numero,
+      'motdepasse': this.password,
+    };
   }
-  Map<String, dynamic> tojson() {
-    final _data = <String, dynamic>{};
-    _data["nom"] = nom;
-    _data["email"] = email;
-    _data["numero"] = numero;
-    _data["motdepasse"] = motdepasse;
-    return _data;
+}
+
+class UserService {
+  static const String apiUrl = 'http://localhost:3000/adduser';
+
+  static Future<http.Response> addUser(Map<String, dynamic> user) async {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+      body: jsonEncode(user),
+    );
+
+    print("réponse");
+    print(response);
+
+    if (response.statusCode == 201) {
+      return response;
+      }
+       else {
+      throw Exception('Impossible d\'ajouter l\'utilisateur');
+    }
   }
 }
 
@@ -41,7 +58,7 @@ class _ajoutState extends State<ajout> {
   var _formKey = GlobalKey<FormState>();
   var _emailController = TextEditingController();
   var _nomController = TextEditingController();
-  var _motdepasseController = TextEditingController();
+  var _passwordController = TextEditingController();
   var _numeroController = TextEditingController();
 
   @override
@@ -72,7 +89,7 @@ class _ajoutState extends State<ajout> {
                     height: 10.0,
                   ),
                   TextFormField(
-                    controller: _nomController,
+                    controller: _emailController,
                     decoration: InputDecoration(labelText: 'email'),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -98,7 +115,7 @@ class _ajoutState extends State<ajout> {
                     height: 10.0,
                   ),
                   TextFormField(
-                    controller: _motdepasseController,
+                    controller: _passwordController,
                     decoration: InputDecoration(labelText: 'motdepasse'),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -117,17 +134,18 @@ class _ajoutState extends State<ajout> {
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           var nom = _nomController.text;
-                          var email = _emailController;
+                          var email = _emailController.text;
                           var numero = double.parse(_numeroController.text);
-                          var motdepasse = _motdepasseController;
-                         
+                          var password = _passwordController.text;
+                          print(jsonEncode(user(
+                            nom,
+                            email,
+                            numero,
+                            password,
+                          ).toJson()));
 
-                          var success = await AuthService.adduser(user(
-                           nom: _nomController.text,
-                           email :_emailController.text,
-                          numero : double.parse(_numeroController.text),
-                           motdepasse : _motdepasseController.text));
-                             
+                          var success = await UserService.addUser(
+                              user(nom, email, numero, password).toJson());
                         }
                       },
                       child: Text('ajouter'),

@@ -1,81 +1,111 @@
+import 'dart:async';
 import 'dart:convert';
+import 'ProductDetail.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-class produit {
-  late String? nom;
-  late double? prix;
-  late double? code;
-  late double? stock;
-  late double? criteredemesure;
 
-  produit( {
-    this.nom,
-    this.prix,
-    this.code,
-    this.stock,
-    this.criteredemesure,
-  });
-
-  factory produit.fromJson(Map<String, dynamic> json) {
-    return produit(
-     nom: json['nom'] as String?,
-      prix: json['prix'] as double?,
-      code: json['code'] as double?,
-      stock: json['stock'] as double?,
-      criteredemesure: json['criteredemesure'] as double?,
-    );
-  }
+class ListProducts extends StatefulWidget {
+  @override
+  _ListProductsState createState() => _ListProductsState();
 }
 
-class ProductListView extends StatefulWidget {
-  @override
-  _ProductListViewState createState() => _ProductListViewState();
-}
+class _ListProductsState extends State<ListProducts> {
+  List products = [];
+  bool isLoading = false;
 
-class _ProductListViewState extends State<ProductListView> {
-  late List<produit> _products;
-
-  @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _getProducts();
+    this.fetchproduct();
   }
 
-  Future<void> _getProducts() async {
-    final response =
-        await http.get(Uri.parse('https://votre_api_url/products'));
-
-    if (response.statusCode == 200) {
-      final jsonList = jsonDecode(response.body) as List;
+ Future<void> fetchproduct() async {
+    setState(() {
+      isLoading = true;
+    });
+    var url = Uri.parse("http://localhost:8000/addproduct");
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var items = json.decode(response.body)['results'];
+        setState(() {
+          products = List<Map<String, dynamic>>.from(items);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          products = [];
+          isLoading = false;
+        });
+      }
+    } catch (e) {
       setState(() {
-        _products = jsonList.map((json) => produit.fromJson(json)).toList();
+        products = [];
+        isLoading = false;
       });
-    } else {
-      throw Exception('Failed to load products');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _products != null
-        ? ListView.builder(
-            itemCount: _products.length,
-            itemBuilder: (BuildContext context, int index) {
-              final produit = _products[index];
-              return Card(
-                child: ListTile(
-                  title: Text(
-                    'aaa',
-                    style:
-                        TextStyle(fontSize: 25.0, color: Colors.orangeAccent),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Listviews Products"),
+        backgroundColor: Colors.purple,
+        elevation: 0,
+      ),
+      body: getBody(),
+    );
+  }
+
+  Widget getBody() {
+    if (products.isEmpty || isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          return getCard(products[index]);
+        });
+  }
+
+  Widget getCard(item) {
+        var nom = item['nom'];
+
+    return Card(
+        elevation: 1.5,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetail(product: item),
+              ),
+            );}
+          , child: ListTile(
+          title: Row(
+            children: <Widget>[
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(60/2),
                   ),
+              ),
+              SizedBox(width: 20,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width-140,
+                    child: Text(nom.toString(),style: TextStyle(fontSize: 17),)
                   
-                ),
-              );
-            },
-          )
-        : Center(
-            child: CircularProgressIndicator(),
-          );
+                    ),
+                  ])
+            ]))
+    )));
   }
 }

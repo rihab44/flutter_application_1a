@@ -3,6 +3,7 @@ import 'login.dart';
 import 'produit.dart';
 import 'ajoututulisateur.dart';
 import 'produitliste.dart';
+import 'ajoutcommande.dart';
 
 class page1 extends StatelessWidget {
   @override
@@ -74,7 +75,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductListView()),
+                  MaterialPageRoute(builder: (context) => ListProducts() ),
                 );
               },
               splashColor: Colors.purple,
@@ -132,7 +133,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>page1()),
+                  MaterialPageRoute(builder: (context) =>ajoutcommande()),
                 );
               },
               splashColor: Colors.purple,

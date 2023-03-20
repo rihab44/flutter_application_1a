@@ -3,14 +3,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'page.dart';
 
-class Produit {
+class commande {
   String nom;
   double prix;
   double code;
   double stock;
   double criteredemesure;
 
-  Produit(this.nom, this.prix, this.code, this.stock, this.criteredemesure);
+  commande(this.nom, this.prix, this.code, this.stock, this.criteredemesure);
   Map<String, dynamic> toJson() {
     return {
       'nom': this.nom,
@@ -21,11 +21,10 @@ class Produit {
     };
   }
 }
+class commandeservice {
+  static const String apiUrl = 'http://localhost:5000/addcommande';
 
-class productservice {
-  static const String apiUrl = 'http://localhost:8000/addproduct';
-
-  static Future<http.Response> addProduct(Map<String, dynamic> produit) async {
+  static Future<http.Response> addcommande(Map<String, dynamic> commande) async {
     var response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -33,7 +32,7 @@ class productservice {
         'Content-Type': 'application/json',
         'Accept': '*/*'
       },
-      body: jsonEncode(produit),
+      body: jsonEncode(commande),
     );
     print("response");
     print(response);
@@ -44,38 +43,38 @@ class productservice {
     }
   }
 }
+class ajoutcommande extends StatefulWidget {
+  const ajoutcommande({Key? key}) : super(key: key);
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<ajoutcommande> createState() => _ajoutcommandeState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
-  var _formKey = GlobalKey<FormState>();
-  var _nomController = TextEditingController();
+class _ajoutcommandeState extends State<ajoutcommande> {
+    var _formKey = GlobalKey<FormState>();
+    var _nomController = TextEditingController();
 
   var _prixController = TextEditingController();
   var _codeController = TextEditingController();
   var _stockController = TextEditingController();
   var _criteredemesureController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
        backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-        title: Text('ajoutproduit'),
+      title: Text('ajout commande'),
         backgroundColor: Colors.purple,
         elevation: 0,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
+      body: Padding( padding: EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+           TextFormField(
                 controller: _nomController,
                 decoration: InputDecoration(
                   labelText: 'nom',
@@ -163,11 +162,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       var criteredemesure =
                           double.parse(_criteredemesureController.text);
                       print(jsonEncode(
-                          Produit(nom, prix, code, stock, criteredemesure)
+                          commande(nom, prix, code, stock, criteredemesure)
                               .toJson()));
 
-                      var success = await productservice.addProduct(
-                          Produit(nom, prix, code, stock, criteredemesure)
+                      var success = await commandeservice.addcommande(
+                          commande(nom, prix, code, stock, criteredemesure)
                               .toJson());
                       Navigator.push(
                         context,
@@ -176,10 +175,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     }
                   },
                   child: Text('ajouter'))
-            ],
-          ),
-        ),
+          ],
+        )
+      )
+
+
       ),
-    );
+      );
+    
   }
 }
