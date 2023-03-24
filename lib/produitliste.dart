@@ -1,111 +1,112 @@
-import 'dart:async';
 import 'dart:convert';
-import 'ProductDetail.dart';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ListProducts extends StatefulWidget {
-  @override
-  _ListProductsState createState() => _ListProductsState();
+class Produit {
+  late String nom;
+  late int prix;
+  late int code;
+  late int stock;
+  late int criteredemesure;
+
+  Produit({
+    required this.nom,
+    required this.prix,
+    required this.code,
+    required this.stock,
+    required this.criteredemesure,
+  });
+
+  Produit.fromJson(Map<String, dynamic> json) {
+    nom = json['nom'];
+    prix = json['prix'];
+    code = json['code'];
+    stock = json['stock'];
+    criteredemesure = json['criteredemesure'];
+  }
 }
 
-class _ListProductsState extends State<ListProducts> {
-  List products = [];
-  bool isLoading = false;
+class APIService {
+  Future<List<Produit>> getProduit() async {
+    const String apiUrl = 'http://localhost:8000/products';
+    var response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+    );
 
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    this.fetchproduct();
-  }
-
- Future<void> fetchproduct() async {
-    setState(() {
-      isLoading = true;
-    });
-    var url = Uri.parse("http://localhost:8000/addproduct");
-    try {
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var items = json.decode(response.body)['results'];
-        setState(() {
-          products = List<Map<String, dynamic>>.from(items);
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          products = [];
-          isLoading = false;
-        });
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      List<Produit> produits = [];
+      for (var item in jsonData) {
+        produits.add(Produit.fromJson(item));
       }
-    } catch (e) {
-      setState(() {
-        products = [];
-        isLoading = false;
-      });
+      return produits;
+    } else {
+      throw Exception('Impossible de récupérer les données.');
     }
+  }
+}
+
+class MyDataTable extends StatefulWidget {
+  @override
+  _MyDataTableState createState() => _MyDataTableState();
+}
+
+class _MyDataTableState extends State<MyDataTable> {
+  late Future<List<Produit>> _produitsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _produitsFuture = APIService().getProduit();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-        title: Text("Listviews Products"),
-        backgroundColor: Colors.purple,
+         backgroundColor: Colors.purple,
         elevation: 0,
+        title: Text("liste des produits"),
       ),
-      body: getBody(),
+      body: FutureBuilder<List<Produit>>(
+        future: _produitsFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<Produit>> snapshot) {
+          if (snapshot.hasData) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  DataColumn(label: Text('Nom')),
+                  DataColumn(label: Text('Prix')),
+                  DataColumn(label: Text('Code')),
+                  DataColumn(label: Text('Stock')),
+                  DataColumn(label: Text('Critère de mesure'))
+                ],
+                rows: snapshot.data!.map((produit) => DataRow(cells: [
+                      DataCell(Text(produit.nom)),
+                      DataCell(Text(produit.prix.toString())),
+                      DataCell(Text(produit.code.toString())),
+                      DataCell(Text(produit.stock.toString())),
+                      DataCell(Text(produit.criteredemesure.toString())),
+                    ])).toList(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text("${snapshot.error}"),
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
-  }
-
-  Widget getBody() {
-    if (products.isEmpty || isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          return getCard(products[index]);
-        });
-  }
-
-  Widget getCard(item) {
-        var nom = item['nom'];
-
-    return Card(
-        elevation: 1.5,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductDetail(product: item),
-              ),
-            );}
-          , child: ListTile(
-          title: Row(
-            children: <Widget>[
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                   borderRadius: BorderRadius.circular(60/2),
-                  ),
-              ),
-              SizedBox(width: 20,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width-140,
-                    child: Text(nom.toString(),style: TextStyle(fontSize: 17),)
-                  
-                    ),
-                  ])
-            ]))
-    )));
   }
 }

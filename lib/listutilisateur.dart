@@ -1,129 +1,104 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 
-class IndexPage extends StatefulWidget {
+class user {
+  late String nom;
+  late String email;
+  late double numero;
+
+  late String password;
+
+  user({ required this.nom,  required this.email,  required this.numero,  required this.password});
+  user.fromJson(Map<String, dynamic> json) {
+    nom = json['nom'];
+    email = json['email'];
+    numero = json['code'];
+    password = json['password'];
+    
+  }
+}
+class APIService1 {
+  Future<List<user>> getProduit() async {
+    const String apiUrl = 'http://localhost:3000/users';
+    var response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      List<user> produits = [];
+      for (var item in jsonData) {
+        produits.add(user.fromJson(item));
+      }
+      return produits;
+    } else {
+      throw Exception('Impossible de récupérer les données.');
+    }
+  }
+}
+class MyDataTable1 extends StatefulWidget {
   @override
-  _IndexPageState createState() => _IndexPageState();
+  _MyDataTable1State createState() => _MyDataTable1State();
 }
 
-class _IndexPageState extends State<IndexPage> {
-  List users = [];
-  bool isLoading = false;
+class _MyDataTable1State extends State<MyDataTable1> {
+  late Future<List<user>> _produitsFuture;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    this.fetchUser();
-  }
-
-  fetchUser() async {
-    setState(() {
-      isLoading = true;
-    });
-    final response = await http.get(Uri.parse('https://votre_api_url/users'));
-
-    // print(response.body);
-    if (response.statusCode == 200) {
-      var items = json.decode(response.body)['results'];
-      setState(() {
-        users = items;
-        isLoading = false;
-      });
-    } else {
-      users = [];
-      isLoading = false;
-    }
+    _produitsFuture = APIService1().getProduit();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+       backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-        title: Text('liste des utilisateurs'),
-        backgroundColor: Color.fromARGB(255, 174, 45, 196),
+         backgroundColor: Colors.purple,
         elevation: 0,
+        title: Text("liste des produits"),
       ),
-      body: getBody(),
-    );
-  }
-
-  Widget getBody() {
-    if (users.contains(null) || users.length < 0 || isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: Colors.purple,
-        ),
-      );
-    }
-    return ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          return getCard(users[index]);
-        });
-  }
-
-  Widget getCard(item) {
-    var nom = item['nom'];
-    var email = item['email'];
-    var numero = item['numero'];
-    var motdepasse = item['motdepasse'];
-    return Card(
-      elevation: 1.5,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListTile(
-          title: Row(
-            children: <Widget>[
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(60 / 2),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width - 140,
-                      child: Text(
-                        nom,
-                        style: TextStyle(fontSize: 17),
-                      )),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    email.toString(),
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                    SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    numero.toString(),
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                    SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    motdepasse.toString(),
-                    style: TextStyle(color: Colors.grey),
-                  )
+      body: FutureBuilder<List<user>>(
+        future: _produitsFuture,
+        builder: (BuildContext context, AsyncSnapshot<List<user>> snapshot) {
+          if (snapshot.hasData) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  DataColumn(label: Text('Nom')),
+                  DataColumn(label: Text('email')),
+                  DataColumn(label: Text('numero')),
+                  DataColumn(label: Text('password')),
+                 
                 ],
-              )
-            ],
-          ),
-        ),
+                rows: snapshot.data!.map((produit) => DataRow(cells: [
+                      DataCell(Text(produit.nom)),
+                      DataCell(Text(produit.email)),
+                      DataCell(Text(produit.numero.toString())),
+                      DataCell(Text(produit.password)),
+                      
+                    ])).toList(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text("${snapshot.error}"),
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
 }
+

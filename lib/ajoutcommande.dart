@@ -1,187 +1,153 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1a/formulecommande.dart';
+import 'package:http/http.dart' as http;
 
-class commande {
-  String nom;
-  double prix;
-  double code;
-  double stock;
-  double criteredemesure;
+class Produit {
+  late String nom;
+  late int prix;
+  late int code;
+  late int stock;
+  late int criteredemesure;
+  bool selected = false;
 
-  commande(this.nom, this.prix, this.code, this.stock, this.criteredemesure);
-  Map<String, dynamic> toJson() {
-    return {
-      'nom': this.nom,
-      'prix': this.prix,
-      'code': this.code,
-      'stock': this.stock,
-      'criteredemesure': this.criteredemesure,
-    };
+  Produit({
+    required this.nom,
+    required this.prix,
+    required this.code,
+    required this.stock,
+    required this.criteredemesure,
+  });
+
+  Produit.fromJson(Map<String, dynamic> json) {
+    nom = json['nom'];
+    prix = json['prix'];
+    code = json['code'];
+    stock = json['stock'];
+    criteredemesure = json['criteredemesure'];
   }
 }
-class commandeservice {
-  static const String apiUrl = 'http://localhost:5000/addcommande';
 
-  static Future<http.Response> addcommande(Map<String, dynamic> commande) async {
-    var response = await http.post(
+class APIService {
+  Future<List<Produit>> getProduit() async {
+    const String apiUrl = 'http://localhost:8000/products';
+    var response = await http.get(
       Uri.parse(apiUrl),
       headers: {
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',
-        'Accept': '*/*'
+        'Accept': '*/*',
       },
-      body: jsonEncode(commande),
     );
-    print("response");
-    print(response);
-    if (response.statusCode == 201) {
-      return response;
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      List<Produit> produits = [];
+      for (var item in jsonData) {
+        produits.add(Produit.fromJson(item));
+      }
+      return produits;
     } else {
-      throw Exception('Impossible d\'ajouter le produit');
+      throw Exception('Impossible de récupérer les données.');
     }
   }
 }
-class ajoutcommande extends StatefulWidget {
-  const ajoutcommande({Key? key}) : super(key: key);
 
-
+class MyDataTablec extends StatefulWidget {
   @override
-  State<ajoutcommande> createState() => _ajoutcommandeState();
+  _MyDataTablecState createState() => _MyDataTablecState();
 }
 
-class _ajoutcommandeState extends State<ajoutcommande> {
-    var _formKey = GlobalKey<FormState>();
-    var _nomController = TextEditingController();
+class _MyDataTablecState extends State<MyDataTablec> {
+  late Future<List<Produit>> _produitsFuture;
+  List<Produit> _selectedProduits = [];
 
-  var _prixController = TextEditingController();
-  var _codeController = TextEditingController();
-  var _stockController = TextEditingController();
-  var _criteredemesureController = TextEditingController();
+  void _onProduitSelected(Produit produit) {
+    setState(() {
+      produit.selected = !produit.selected;
+      if (produit.selected) {
+        _selectedProduits.add(produit);
+      } else {
+        _selectedProduits.remove(produit);
+      }
+    });
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-       backgroundColor: Color.fromARGB(255, 241, 213, 246),
-      appBar: AppBar(
-      title: Text('ajout commande'),
-        backgroundColor: Colors.purple,
-        elevation: 0,
-      ),
-      body: Padding( padding: EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-           TextFormField(
-                controller: _nomController,
-                decoration: InputDecoration(
-                  labelText: 'nom',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le nom du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _prixController,
-                decoration: InputDecoration(
-                  labelText: 'prix',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le prix du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _codeController,
-                decoration: InputDecoration(
-                  labelText: 'code',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le code du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _stockController,
-                decoration: InputDecoration(
-                  labelText: 'stock',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le nombre de stock du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _criteredemesureController,
-                decoration: InputDecoration(
-                  labelText: 'critere de mesure',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le critere de mesure du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              ElevatedButton(
-                 style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 174, 45, 196),
-                     ),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      var nom = _nomController.text;
-                      var prix = double.parse(_prixController.text);
-                      var code = double.parse(_codeController.text);
-                      var stock = double.parse(_stockController.text);
-                      var criteredemesure =
-                          double.parse(_criteredemesureController.text);
-                      print(jsonEncode(
-                          commande(nom, prix, code, stock, criteredemesure)
-                              .toJson()));
-
-                      var success = await commandeservice.addcommande(
-                          commande(nom, prix, code, stock, criteredemesure)
-                              .toJson());
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => page1()),
-                      );
-                    }
-                  },
-                  child: Text('ajouter'))
-          ],
-        )
-      )
-
-
-      ),
-      );
-    
+  void initState() {
+    super.initState();
+    _produitsFuture = APIService().getProduit();
   }
+
+  @override
+ 
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 241, 213, 246),
+    appBar: AppBar(
+      backgroundColor: Colors.purple,
+      elevation: 0,
+      title: Text("liste des produits"),
+    ),
+    body: FutureBuilder<List<Produit>>(
+      future: _produitsFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Produit>> snapshot) {
+        if (snapshot.hasData) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: [
+                DataColumn(label: Text('Nom')),
+                DataColumn(label: Text('Prix')),
+                DataColumn(label: Text('Code')),
+                DataColumn(label: Text('Stock')),
+                DataColumn(label: Text('Critère de mesure'))
+              ],
+              rows: snapshot.data!
+                  .map((produit) => DataRow(
+                    selected: produit.selected,
+                    onSelectChanged: (selected) => _onProduitSelected(produit),
+                    cells: [
+                      DataCell(Text(produit.nom)),
+                      DataCell(Text(produit.prix.toString())),
+                      DataCell(Text(produit.code.toString())),
+                      DataCell(Text(produit.stock.toString())),
+                      DataCell(Text(produit.criteredemesure.toString())),
+                    ],
+                  ))
+                  .toList(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text("${snapshot.error}"),
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    ),
+    floatingActionButton: buildSubmit(),
+  );
+}
+
+Widget buildSubmit() => Container(
+  width: double.infinity,
+  padding: EdgeInsets.all(12),
+  
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      primary: Color.fromARGB(255, 174, 45, 196),
+    ),
+    child: Text('commander'),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddProductScreen()),
+      );
+    },
+  ),
+);
 }

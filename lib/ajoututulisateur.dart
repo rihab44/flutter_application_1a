@@ -131,7 +131,7 @@ class _ajoutState extends State<ajout> {
                       style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(255, 174, 45, 196),
                       ),
-                      onPressed: () async {
+                      onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           var nom = _nomController.text;
                           var email = _emailController.text;
@@ -144,7 +144,7 @@ class _ajoutState extends State<ajout> {
                             password,
                           ).toJson()));
 
-                          var success = await UserService.addUser(
+                          var success =  UserService.addUser(
                               user(nom, email, numero, password).toJson());
                         }
                       },

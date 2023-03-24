@@ -4,6 +4,7 @@ import 'produit.dart';
 import 'ajoututulisateur.dart';
 import 'produitliste.dart';
 import 'ajoutcommande.dart';
+import 'package:flutter_application_1a/listcommand.dart';
 
 class page1 extends StatelessWidget {
   @override
@@ -15,7 +16,7 @@ class page1 extends StatelessWidget {
           backgroundColor: Colors.purple,
           title: Text('accueil',
               style: TextStyle(
-                color: Color.fromARGB(255, 255, 255, 255),
+                color: Color.fromARGB(255, 254, 251, 251),
                 fontSize: 30,
               ))),
               drawer : Drawer(
@@ -52,6 +53,17 @@ class page1 extends StatelessWidget {
                 );
                       },
                     ),
+                    
+                    ListTile(
+                      leading: Icon(Icons.list),
+                      title: Text('liste des commandes'),
+                      onTap: (){
+                        Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>listcommnde()),
+                );
+                      },
+                    ),
                     ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('deconnexion'),
@@ -75,7 +87,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ListProducts() ),
+                  MaterialPageRoute(builder: (context) => MyDataTable() ),
                 );
               },
               splashColor: Colors.purple,
@@ -103,7 +115,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddProductScreen()
+                  MaterialPageRoute(builder: (context) => MyDataTablec()
                   
                   ),
                 );
@@ -133,7 +145,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>ajoutcommande()),
+                  MaterialPageRoute(builder: (context) =>MyDataTablec()),
                 );
               },
               splashColor: Colors.purple,

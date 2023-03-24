@@ -35,4 +35,5 @@ class produit {
 
     return _data;
   }
+
 }

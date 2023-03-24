@@ -95,21 +95,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _typeController,
-                decoration: InputDecoration(
-                  labelText: 'type',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le type du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
                 controller: _prixController,
                 decoration: InputDecoration(
                   labelText: 'prix',
@@ -182,12 +167,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           var stock = double.parse(_stockController.text);
                           var criteredemesure =
                               double.parse(_criteredemesureController.text);
-                          var success = productservice.addProduct(Produit(
-                                  nom, type, prix, code, stock, criteredemesure)
-                              .toJson());
-                          print(jsonEncode(Produit(
-                                  nom, type, prix, code, stock, criteredemesure)
-                              .toJson()));
+                          var success = productservice.addProduct(
+                              Produit(nom,type, prix, code, stock, criteredemesure)
+                                  .toJson());
+                          print(jsonEncode(
+                              Produit(nom,type, prix, code, stock, criteredemesure)
+                                  .toJson()));
 
                           Navigator.push(
                             context,
