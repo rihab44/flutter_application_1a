@@ -5,22 +5,24 @@ import 'page.dart';
 
 class Produit {
   String nom;
-  String type;
+  String categorie;
   double prix;
   double code;
-  double stock;
-  double criteredemesure;
+  double stockinitial;
+  double stocktompon;
+  double unitedemesure;
 
-  Produit(this.nom, this.type, this.prix, this.code, this.stock,
-      this.criteredemesure);
+  Produit(this.nom, this.categorie, this.prix, this.code, this.stockinitial, this.stocktompon,
+      this.unitedemesure);
   Map<String, dynamic> toJson() {
     return {
       'nom': this.nom,
-      'type': this.type,
+      'categorie': this.categorie,
       'prix': this.prix,
       'code': this.code,
-      'stock': this.stock,
-      'criteredemesure': this.criteredemesure,
+      'stockinitial': this.stockinitial,
+      'stocktompon' : this.stocktompon,
+      'unitedemesure': this.unitedemesure,
     };
   }
 }
@@ -58,12 +60,14 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   var _formKey = GlobalKey<FormState>();
   var _nomController = TextEditingController();
-  var _typeController = TextEditingController();
+  var _categorieController = TextEditingController();
 
   var _prixController = TextEditingController();
   var _codeController = TextEditingController();
-  var _stockController = TextEditingController();
-  var _criteredemesureController = TextEditingController();
+  var _stockinitialController = TextEditingController();
+    var _stocktomponController = TextEditingController();
+
+  var _unitedemesureController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,9 +99,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _typeController,
+                controller: _categorieController,
                 decoration: InputDecoration(
-                  labelText: 'type',
+                  labelText: 'categorie',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -140,13 +144,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _stockController,
+                controller: _stockinitialController,
                 decoration: InputDecoration(
-                  labelText: 'stock',
+                  labelText: 'stockinitial',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le nombre de stock du produit';
+                    return 'donner le nombre de stock initial du produit';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+               TextFormField(
+                controller: _stocktomponController,
+                decoration: InputDecoration(
+                  labelText: 'stocktompon',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'donner le nombre de stock tompon du produit';
                   }
                   return null;
                 },
@@ -155,13 +174,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _criteredemesureController,
+                controller: _unitedemesureController,
                 decoration: InputDecoration(
-                  labelText: 'critere de mesure',
+                  labelText: ' unite de mesure',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le critere de mesure du produit';
+                    return 'donner l"unite de mesure du produit';
                   }
                   return null;
                 },
@@ -176,17 +195,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           var nom = _nomController.text;
-                          var type = _typeController.text;
+                          var categorie = _categorieController.text;
                           var prix = double.parse(_prixController.text);
                           var code = double.parse(_codeController.text);
-                          var stock = double.parse(_stockController.text);
-                          var criteredemesure =
-                              double.parse(_criteredemesureController.text);
+                          var stockinitial = double.parse(_stockinitialController.text);
+                           var stocktompon = double.parse(_stocktomponController.text);
+                          var unitedemesure =
+                              double.parse(_unitedemesureController.text);
                           var success = productservice.addProduct(Produit(
-                                  nom, type, prix, code, stock, criteredemesure)
+                                  nom, categorie, prix, code, stockinitial, stocktompon , unitedemesure)
                               .toJson());
                           print(jsonEncode(Produit(
-                                  nom, type, prix, code, stock, criteredemesure)
+                                  nom, categorie, prix, code, stockinitial,stocktompon, unitedemesure)
                               .toJson()));
 
                           Navigator.push(

@@ -4,25 +4,31 @@ import 'package:http/http.dart' as http;
 
 class Produit {
   late String nom;
+  late String categorie;
   late int prix;
   late int code;
-  late int stock;
-  late int criteredemesure;
+  late int stockinitial;
+  late int stocktompon;
+  late int unitedemesure;
 
   Produit({
     required this.nom,
+    required this.categorie,
     required this.prix,
     required this.code,
-    required this.stock,
-    required this.criteredemesure,
+    required this.stockinitial,
+    required this.stocktompon,  
+    required this.unitedemesure,
   });
 
   Produit.fromJson(Map<String, dynamic> json) {
     nom = json['nom'];
+    categorie = json['categorie'];
     prix = json['prix'];
     code = json['code'];
-    stock = json['stock'];
-    criteredemesure = json['criteredemesure'];
+    stockinitial = json['stockinitial'];
+     stocktompon = json['stocktompon'];
+    unitedemesure = json['unitedemesure'];
   }
 }
 
@@ -68,9 +74,9 @@ class _MyDataTableState extends State<MyDataTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-         backgroundColor: Colors.purple,
+        backgroundColor: Colors.purple,
         elevation: 0,
         title: Text("liste des produits"),
       ),
@@ -83,18 +89,24 @@ class _MyDataTableState extends State<MyDataTable> {
               child: DataTable(
                 columns: [
                   DataColumn(label: Text('Nom')),
+                  DataColumn(label: Text('categorie')),
                   DataColumn(label: Text('Prix')),
                   DataColumn(label: Text('Code')),
-                  DataColumn(label: Text('Stock')),
+                  DataColumn(label: Text('Stock inital')),
+                  DataColumn(label: Text('Stock tompon')),
                   DataColumn(label: Text('Critère de mesure'))
                 ],
-                rows: snapshot.data!.map((produit) => DataRow(cells: [
-                      DataCell(Text(produit.nom)),
-                      DataCell(Text(produit.prix.toString())),
-                      DataCell(Text(produit.code.toString())),
-                      DataCell(Text(produit.stock.toString())),
-                      DataCell(Text(produit.criteredemesure.toString())),
-                    ])).toList(),
+                rows: snapshot.data!
+                    .map((produit) => DataRow(cells: [
+                          DataCell(Text(produit.nom)),
+                          DataCell(Text(produit.categorie)),
+                          DataCell(Text(produit.prix.toString())),
+                          DataCell(Text(produit.code.toString())),
+                          DataCell(Text(produit.stockinitial.toString())),
+                           DataCell(Text(produit.stocktompon.toString())),
+                          DataCell(Text(produit.unitedemesure.toString())),
+                        ]))
+                    .toList(),
               ),
             );
           } else if (snapshot.hasError) {

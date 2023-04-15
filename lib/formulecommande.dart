@@ -3,30 +3,30 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'page.dart';
 
-class Produit {
-  String nom;
-  String type;
+class commande {
+  String nomproduit;
+  String typeprojet;
   double prix;
-  double code;
-  double stock;
-  double criteredemesure;
+  String nomutilisateur;
 
-  Produit(this.nom, this.type, this.prix, this.code, this.stock,
-      this.criteredemesure);
+  commande(
+    this.nomproduit,
+    this.typeprojet,
+    this.prix,
+    this.nomutilisateur,
+  );
   Map<String, dynamic> toJson() {
     return {
-      'nom': this.nom,
-      'type': this.type,
-      'prix': this.prix,
-      'code': this.code,
-      'stock': this.stock,
-      'criteredemesure': this.criteredemesure,
+      'nomproduit': this.nomproduit,
+      'typeprojet': this.typeprojet,
+      'codeoracle': this.prix,
+      'nomutilisateur': this.nomutilisateur,
     };
   }
 }
 
 class productservice {
-  static const String apiUrl = 'http://localhost:8000/addproduct';
+  static const String apiUrl = 'http://localhost:3000/addcommande';
 
   static Future<http.Response> addProduct(Map<String, dynamic> produit) async {
     var response = await http.post(
@@ -49,7 +49,14 @@ class productservice {
 }
 
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({Key? key}) : super(key: key);
+  final String nomProduitCommande;
+  final String typeprojetCommande;
+  final String prixproduit;
+
+  AddProductScreen(
+      {required this.nomProduitCommande,
+      required this.typeprojetCommande,
+      required this.prixproduit});
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -57,19 +64,17 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   var _formKey = GlobalKey<FormState>();
-  var _nomController = TextEditingController();
-  var _typeController = TextEditingController();
 
-  var _prixController = TextEditingController();
-  var _codeController = TextEditingController();
-  var _stockController = TextEditingController();
-  var _criteredemesureController = TextEditingController();
+  var _codeoracleController = TextEditingController();
+
+  var _nomutilisateurController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 241, 213, 246),
       appBar: AppBar(
-        title: Text('ajoutproduit'),
+        title: Text('commander'),
         backgroundColor: Colors.purple,
         elevation: 0,
       ),
@@ -79,77 +84,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
           key: _formKey,
           child: Column(
             children: [
+              Text(widget.nomProduitCommande),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text('type de projet'),
+              Text(widget.typeprojetCommande),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(widget.prixproduit),
+              SizedBox(
+                height: 10.0,
+              ),
               TextFormField(
-                controller: _nomController,
+                controller: _nomutilisateurController,
                 decoration: InputDecoration(
-                  labelText: 'nom',
+                  labelText: 'nom utilisateur',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le nom du produit';
+                    return 'donner nom utilisateur';
                   }
                   return null;
                 },
               ),
               SizedBox(
                 height: 10.0,
-              ),
-              TextFormField(
-                controller: _prixController,
-                decoration: InputDecoration(
-                  labelText: 'prix',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le prix du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _codeController,
-                decoration: InputDecoration(
-                  labelText: 'code',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le code du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _stockController,
-                decoration: InputDecoration(
-                  labelText: 'stock',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le nombre de stock du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextFormField(
-                controller: _criteredemesureController,
-                decoration: InputDecoration(
-                  labelText: 'critere de mesure',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le critere de mesure du produit';
-                  }
-                  return null;
-                },
               ),
               SizedBox(
                   width: double.infinity,
@@ -160,19 +121,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          var nom = _nomController.text;
-                          var type = _typeController.text;
-                          var prix = double.parse(_prixController.text);
-                          var code = double.parse(_codeController.text);
-                          var stock = double.parse(_stockController.text);
-                          var criteredemesure =
-                              double.parse(_criteredemesureController.text);
-                          var success = productservice.addProduct(
-                              Produit(nom,type, prix, code, stock, criteredemesure)
-                                  .toJson());
-                          print(jsonEncode(
-                              Produit(nom,type, prix, code, stock, criteredemesure)
-                                  .toJson()));
+                          var nomproduit = widget.nomProduitCommande;
+
+                          var typeprojet = widget.typeprojetCommande;
+                          var prix = widget.prixproduit;
+                          var nomutilisateur = _nomutilisateurController.text;
+
+                          var success = productservice.addProduct(commande(
+                            nomproduit,
+                            typeprojet,
+                            double.parse(prix)  ,
+                            nomutilisateur,
+                          ).toJson());
+                          print(jsonEncode(commande(nomproduit, typeprojet,
+                                 double.parse(prix),nomutilisateur)
+                              .toJson()));
 
                           Navigator.push(
                             context,

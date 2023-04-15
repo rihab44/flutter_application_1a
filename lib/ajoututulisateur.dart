@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,6 @@ class user {
   String nom;
   String email;
   double numero;
-
   String password;
 
   user(this.nom, this.email, this.numero, this.password);
@@ -16,7 +16,7 @@ class user {
       'nom': this.nom,
       'email': this.email,
       'numero': this.numero,
-      'motdepasse': this.password,
+      'password': this.password,
     };
   }
 }
@@ -24,7 +24,7 @@ class user {
 class UserService {
   static const String apiUrl = 'http://localhost:3000/adduser';
 
-  static Future<http.Response> addUser(Map<String, dynamic> user) async {
+  static Future<http.Response> adduser(Map<String, dynamic> user) async {
     var response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -34,15 +34,12 @@ class UserService {
       },
       body: jsonEncode(user),
     );
-
-    print("réponse");
+    print("response");
     print(response);
-
     if (response.statusCode == 201) {
       return response;
-      }
-       else {
-      throw Exception('Impossible d\'ajouter l\'utilisateur');
+    } else {
+      throw Exception('Impossible d\'ajouter utilisateur');
     }
   }
 }
@@ -137,15 +134,14 @@ class _ajoutState extends State<ajout> {
                           var email = _emailController.text;
                           var numero = double.parse(_numeroController.text);
                           var password = _passwordController.text;
-                          print(jsonEncode(user(
-                            nom,
-                            email,
-                            numero,
-                            password,
-                          ).toJson()));
-
-                          var success =  UserService.addUser(
+                          var success = UserService.adduser(
                               user(nom, email, numero, password).toJson());
+                          print(jsonEncode(
+                              user(nom, email, numero, password).toJson()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => page1()),
+                          );
                         }
                       },
                       child: Text('ajouter'),

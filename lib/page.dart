@@ -3,8 +3,9 @@ import 'login.dart';
 import 'produit.dart';
 import 'ajoututulisateur.dart';
 import 'produitliste.dart';
-import 'ajoutcommande.dart';
 import 'package:flutter_application_1a/listcommand.dart';
+import 'listutilisateur.dart';
+import 'comm.dart';
 
 class page1 extends StatelessWidget {
   @override
@@ -36,7 +37,15 @@ class page1 extends StatelessWidget {
                     ListTile(
                    leading: Icon(Icons.person),
                       title: Text('liste des utulisateurs'),  
+                     onTap: (){
+                        Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>MyDataTable1()),
+                );
+                      },
+                    
                     ),
+
                      ListTile(
                    leading: Icon(Icons.list),
                       title: Text('gestion des projets'),  
@@ -115,7 +124,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyDataTablec()
+                  MaterialPageRoute(builder: (context) => commande()
                   
                   ),
                 );
@@ -131,7 +140,7 @@ class page1 extends StatelessWidget {
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "   gestion des commandes ",
+                      "  passer un commande ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],
@@ -145,7 +154,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>MyDataTablec()),
+                  MaterialPageRoute(builder: (context) =>commande()),
                 );
               },
               splashColor: Colors.purple,
@@ -167,34 +176,7 @@ class page1 extends StatelessWidget {
               ),
             ),
           ),
-          Card(
-            margin: EdgeInsets.all(5.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => page1()),
-                );
-              },
-              splashColor: Colors.purple,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      Icons.production_quantity_limits,
-                      size: 60.0,
-                      color: Colors.deepPurple,
-                    ),
-                    Text(
-                      "gestion de traffic  ",
-                      style: new TextStyle(fontSize: 17.0),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
+         
           Card(
             margin: EdgeInsets.all(5.0),
             child: InkWell(
