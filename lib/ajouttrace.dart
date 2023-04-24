@@ -1,36 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'page.dart';
 
-class Produit {
-  String nom;
-  String categorie;
-  double prix;
-  double code;
-  double stockinitial;
-  double stocktompon;
-  double unitedemesure;
+class trace {
+  String nomproduit;
+  String ordreservice;
+  String adressedetraveaux;
+  String nomentreprise;
+  double numerodemarche;
+  String augentdesuivie;
 
-  Produit(this.nom, this.categorie, this.prix, this.code, this.stockinitial, this.stocktompon,
-      this.unitedemesure);
+  trace(
+    this.nomproduit,
+    this.ordreservice,
+    this.adressedetraveaux,
+    this.nomentreprise,
+    this.numerodemarche,
+    this.augentdesuivie,
+  );
   Map<String, dynamic> toJson() {
     return {
-      'nom': this.nom,
-      'categorie': this.categorie,
-      'prix': this.prix,
-      'code': this.code,
-      'stockinitial': this.stockinitial,
-      'stocktompon' : this.stocktompon,
-      'unitedemesure': this.unitedemesure,
+      'nomproduit': this.nomproduit,
+      'ordreservice': this.ordreservice,
+      'adressedetraveaux': this.adressedetraveaux,
+      'nomentreprise': this.nomentreprise,
+      'numerodemarche': this.numerodemarche,
+      'augentdesuivie': this.augentdesuivie,
     };
   }
 }
 
-class productservice {
-  static const String apiUrl = 'http://localhost:8000/addproduct';
+class service {
+  static const String apiUrl = 'http://localhost:3000/addtrace';
 
-  static Future<http.Response> addProduct(Map<String, dynamic> produit) async {
+  static Future<http.Response> addtrace(Map<String, dynamic> trace) async {
     var response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -38,7 +42,7 @@ class productservice {
         'Content-Type': 'application/json',
         'Accept': '*/*',
       },
-      body: jsonEncode(produit),
+      body: jsonEncode(trace),
     );
     print("response");
     print(response);
@@ -50,33 +54,30 @@ class productservice {
   }
 }
 
-class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({Key? key}) : super(key: key);
+class ajouttrace extends StatefulWidget {
+  const ajouttrace({Key? key}) : super(key: key);
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  State<ajouttrace> createState() => _ajouttraceState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _ajouttraceState extends State<ajouttrace> {
   var _formKey = GlobalKey<FormState>();
-  var _nomController = TextEditingController();
-  var _categorieController = TextEditingController();
+  var _nomproduitController = TextEditingController();
+  var _ordreserviceController = TextEditingController();
 
-  var _prixController = TextEditingController();
-  var _codeController = TextEditingController();
-  var _stockinitialController = TextEditingController();
-    var _stocktomponController = TextEditingController();
-
-  var _unitedemesureController = TextEditingController();
+  var _adressedetraveauxController = TextEditingController();
+  var _nomentrepriseController = TextEditingController();
+  var _numerodemarcheController = TextEditingController();
+  var _augentdesuivieController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 243, 240, 244),
-
       appBar: AppBar(
-        title: Text('ajoutproduit'),
         backgroundColor: Colors.purple,
         elevation: 0,
+        title: Text("traçabilité des produits"),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -85,9 +86,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: Column(
             children: [
               TextFormField(
-                controller: _nomController,
+                controller: _nomproduitController,
                 decoration: InputDecoration(
-                  labelText: 'nom',
+                  labelText: 'nom du produit',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -100,13 +101,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _categorieController,
+                controller: _ordreserviceController,
                 decoration: InputDecoration(
-                  labelText: 'categorie',
+                  labelText: 'ordre service',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le type du produit';
+                    return 'donner ordre service du produit';
                   }
                   return null;
                 },
@@ -115,13 +116,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _prixController,
+                controller: _adressedetraveauxController,
                 decoration: InputDecoration(
-                  labelText: 'prix',
+                  labelText: 'adresse de traveaux',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le prix du produit';
+                    return 'donner adresse de traveaux';
                   }
                   return null;
                 },
@@ -130,13 +131,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _codeController,
+                controller: _nomentrepriseController,
                 decoration: InputDecoration(
-                  labelText: 'code',
+                  labelText: 'nom entreprise',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le code du produit';
+                    return 'donner le nom de entreprise';
                   }
                   return null;
                 },
@@ -145,28 +146,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _stockinitialController,
+                controller: _numerodemarcheController,
                 decoration: InputDecoration(
-                  labelText: 'stockinitial',
+                  labelText: 'numero de marche ',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner le nombre de stock initial du produit';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-               TextFormField(
-                controller: _stocktomponController,
-                decoration: InputDecoration(
-                  labelText: 'stocktompon',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'donner le nombre de stock tompon du produit';
+                    return 'donner le numero de marche';
                   }
                   return null;
                 },
@@ -175,13 +161,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 height: 10.0,
               ),
               TextFormField(
-                controller: _unitedemesureController,
+                controller: _augentdesuivieController,
                 decoration: InputDecoration(
-                  labelText: ' unite de mesure',
+                  labelText: 'augent de suivie',
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'donner l"unite de mesure du produit';
+                    return 'donner augent de suivie';
                   }
                   return null;
                 },
@@ -195,19 +181,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          var nom = _nomController.text;
-                          var categorie = _categorieController.text;
-                          var prix = double.parse(_prixController.text);
-                          var code = double.parse(_codeController.text);
-                          var stockinitial = double.parse(_stockinitialController.text);
-                           var stocktompon = double.parse(_stocktomponController.text);
-                          var unitedemesure =
-                              double.parse(_unitedemesureController.text);
-                          var success = productservice.addProduct(Produit(
-                                  nom, categorie, prix, code, stockinitial, stocktompon , unitedemesure)
+                          var nomproduit = _nomproduitController.text;
+                          var ordreservice = _ordreserviceController.text;
+                          var adressedetraveaux =
+                              _adressedetraveauxController.text;
+                          var nomentreprise = _nomentrepriseController.text;
+                          var numerodemarche =
+                              double.parse(_numerodemarcheController.text);
+                          var augentdesuivie = _augentdesuivieController.text;
+                          var success = service.addtrace(trace(
+                                  nomproduit,
+                                  ordreservice,
+                                  adressedetraveaux,
+                                  nomentreprise,
+                                 numerodemarche,
+                                  augentdesuivie,
+                                  )
                               .toJson());
-                          print(jsonEncode(Produit(
-                                  nom, categorie, prix, code, stockinitial,stocktompon, unitedemesure)
+                          print(jsonEncode(trace(nomproduit, ordreservice, adressedetraveaux,nomentreprise,
+                                  numerodemarche,augentdesuivie )
                               .toJson()));
 
                           Navigator.push(

@@ -102,7 +102,7 @@ class _MyDataTable1State extends State<MyDataTable1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(255, 243, 240, 244),
       appBar: AppBar(
         backgroundColor: Colors.purple,
         elevation: 0,
@@ -141,7 +141,7 @@ class _MyDataTable1State extends State<MyDataTable1> {
         SizedBox(width: 8),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Colors.red,
+            primary: Color.fromARGB(255, 220, 87, 235),
           ),
           child: Text('Supprimer'),
           onPressed: () async {

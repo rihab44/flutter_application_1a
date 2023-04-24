@@ -61,7 +61,8 @@ class _ajoutState extends State<ajout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(255, 243, 240, 244),
+
         appBar: AppBar(
           title: Text('ajout utulisateur'),
           backgroundColor: Color.fromARGB(255, 174, 45, 196),

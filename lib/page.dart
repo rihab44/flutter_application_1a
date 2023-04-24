@@ -3,21 +3,23 @@ import 'login.dart';
 import 'produit.dart';
 import 'ajoututulisateur.dart';
 import 'produitliste.dart';
-import 'package:flutter_application_1a/listcommand.dart';
+import 'listecommande.dart';
 import 'listutilisateur.dart';
 import 'comm.dart';
-
+import 'admin.dart';
+import 'traçeproduit.dart';
 class page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(213, 246, 243, 247),
+
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.purple,
           title: Text('accueil',
               style: TextStyle(
-                color: Color.fromARGB(255, 254, 251, 251),
+
                 fontSize: 30,
               ))),
               drawer : Drawer(
@@ -40,39 +42,13 @@ class page1 extends StatelessWidget {
                      onTap: (){
                         Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>MyDataTable1()),
+                  MaterialPageRoute(builder: (context) =>AdminPage() ),
                 );
                       },
                     
                     ),
 
-                     ListTile(
-                   leading: Icon(Icons.list),
-                      title: Text('gestion des projets'),  
-                    ),
-                    
-                    
-                    ListTile(
-                      leading: Icon(Icons.add),
-                      title: Text('ajouter un produit'),
-                      onTap: (){
-                        Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>AddProductScreen()),
-                );
-                      },
-                    ),
-                    
-                    ListTile(
-                      leading: Icon(Icons.list),
-                      title: Text('liste des commandes'),
-                      onTap: (){
-                        Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>listcommnde()),
-                );
-                      },
-                    ),
+                   
                     ListTile(
                       leading: Icon(Icons.logout),
                       title: Text('deconnexion'),
@@ -124,7 +100,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => commande()
+                  MaterialPageRoute(builder: (context) => commande1()
                   
                   ),
                 );
@@ -154,7 +130,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>commande()),
+                  MaterialPageRoute(builder: (context) =>traceproduit()),
                 );
               },
               splashColor: Colors.purple,
@@ -183,7 +159,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>page1()),
+                  MaterialPageRoute(builder: (context) =>listcomande()),
                 );
               },
               splashColor: Colors.purple,
@@ -197,7 +173,7 @@ class page1 extends StatelessWidget {
                       color: Colors.deepPurple,
                     ),
                     Text(
-                      "  voir les projets ",
+                      "  liste des commandes ",
                       style: new TextStyle(fontSize: 17.0),
                     )
                   ],

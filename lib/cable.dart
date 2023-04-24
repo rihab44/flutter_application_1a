@@ -133,7 +133,7 @@ class _cableproductState extends State<cableproduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(214, 243, 240, 244),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.purple,
@@ -220,7 +220,7 @@ class _cableproductState extends State<cableproduct> {
                   builder: (context) => AddProductScreen(
                    nomProduitCommande: _selectedcables[0].nom,
             typeprojetCommande: typeDeProjetSelectionne!,
-            prixproduit: prixselectionne.toString(), // transmettre le prix sélectionné
+            prixproduit: prixselectionne, // transmettre le prix sélectionné
 
                   ),
                 ),

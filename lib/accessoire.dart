@@ -134,7 +134,8 @@ class _accessoireproductState extends State<accessoireproduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+      backgroundColor: Color.fromARGB(214, 243, 240, 244),
+
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.purple,
@@ -221,7 +222,7 @@ class _accessoireproductState extends State<accessoireproduct> {
                   builder: (context) => AddProductScreen(
                    nomProduitCommande: _selectedaccessoires[0].nom,
             typeprojetCommande: typeDeProjetSelectionne!,
-                                prixproduit: prixselectionne.toString(), // transmettre le prix sélectionné
+                                prixproduit: prixselectionne, // transmettre le prix sélectionné
 
                   ),
                 ),

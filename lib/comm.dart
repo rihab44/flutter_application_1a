@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'cable.dart';
 import 'accessoire.dart';
 
-class commande extends StatefulWidget {
-  const commande({super.key});
+class commande1 extends StatefulWidget {
+  const commande1({super.key});
 
   @override
-  State<commande> createState() => _commandeState();
+  State<commande1> createState() => _commande1State();
 }
 
-class _commandeState extends State<commande> {
+class _commande1State extends State<commande1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 213, 246),
+       backgroundColor: Color.fromARGB(213, 246, 243, 247),
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.purple,
-          title: Text('ajoutcommande',
+          title: Text('ajouter un commande',
               style: TextStyle(
                 color: Color.fromARGB(255, 254, 251, 251),
                 fontSize: 30,
