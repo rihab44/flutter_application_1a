@@ -132,47 +132,57 @@ class _cableproductState extends State<cableproduct> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(214, 243, 240, 244),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.purple,
-        title: Text(
-          'ajout commande',
-          style: TextStyle(
-            color: Color.fromARGB(255, 254, 251, 251),
-            fontSize: 30,
-          ),
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 255, 255, 255),
+    appBar: AppBar(
+      elevation: 0,
+      backgroundColor: Colors.purple,
+      title: Text(
+        'Ajouter une commande',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 30,
         ),
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return Card(
-              child: InkWell(
+    ),
+    body: ListView.builder(
+      itemBuilder: (context, index) {
+        return Card(
+          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: InkWell(
             onTap: () {
               showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text(cables?[index].nom ?? ""),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'stock initial:${cables?[index].stockinitial ?? ""}'),
-                          Text(
-                              'stock tompon:${cables?[index].stocktompon ?? ""}'),
-                          Text('prix:${cables?[index].prix ?? ""}'),
-                        ],
-                      ),
-                    );
-                  });
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(cables?[index].nom ?? ""),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Stock initial: ${cables?[index].stockinitial ?? ""}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Stock tampon: ${cables?[index].stocktompon ?? ""}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Prix: ${cables?[index].prix ?? ""}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
               _oncableSelected(cables![index]);
             },
             child: Padding(
-              padding:
-                  const EdgeInsets.only(top: 32.0, bottom: 32.0, left: 16.0),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Checkbox(
@@ -181,27 +191,32 @@ class _cableproductState extends State<cableproduct> {
                       _oncableSelected(cables![index]);
                     },
                   ),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       cables![index].nom,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ));
-        },
-        itemCount: cables?.length ?? 0,
-      ),
-      floatingActionButton: FloatingActionButton(
-    onPressed: _onCommanderPressed,
-    backgroundColor: Colors.purple,
-    child: Icon(Icons.shopping_cart),
-  ),
-    );
-  }
+          ),
+        );
+      },
+      itemCount: cables?.length ?? 0,
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: _onCommanderPressed,
+      backgroundColor: Colors.purple,
+      child: Icon(Icons.shopping_cart),
+    ),
+  );
+}
+
   void typeprojetDialog() {
   showDialog(
     context: context,

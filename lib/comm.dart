@@ -13,7 +13,7 @@ class _commande1State extends State<commande1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Color.fromARGB(213, 246, 243, 247),
+       backgroundColor: Color.fromARGB(255, 246, 243, 247),
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.purple,

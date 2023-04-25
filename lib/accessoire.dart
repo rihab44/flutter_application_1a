@@ -134,7 +134,7 @@ class _accessoireproductState extends State<accessoireproduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(214, 243, 240, 244),
+      backgroundColor: Color.fromARGB(255, 243, 240, 244),
 
       appBar: AppBar(
         elevation: 0,
@@ -150,6 +150,8 @@ class _accessoireproductState extends State<accessoireproduct> {
       body: ListView.builder(
         itemBuilder: (context, index) {
           return Card(
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+
               child: InkWell(
             onTap: () {
               showDialog(
@@ -162,10 +164,17 @@ class _accessoireproductState extends State<accessoireproduct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              'stock initial:${accessoires?[index].stockinitial ?? ""}'),
+                              'stock initial:${accessoires?[index].stockinitial ?? ""}',
+                              style: TextStyle(fontSize: 16),
+                              ),
                           Text(
-                              'stock tompon:${accessoires?[index].stocktompon ?? ""}'),
-                          Text('prix:${accessoires?[index].prix ?? ""}'),
+                              'stock tompon:${accessoires?[index].stocktompon ?? ""}',
+                              style: TextStyle(fontSize: 16),
+                              ),
+                          Text('prix:${accessoires?[index].prix ?? ""}'
+                                                 ,style: TextStyle(fontSize: 16),
+                                                 ),
+
                         ],
                       ),
                     );
