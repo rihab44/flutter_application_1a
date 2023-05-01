@@ -99,122 +99,129 @@ Future<bool> updateProduit(Map<String, dynamic> Produit, String id) async {
     return status;
   }
 
-class MyDataTable extends StatefulWidget {
-  @override
-  _MyDataTableState createState() => _MyDataTableState();
+
+class ProduitListView extends StatefulWidget {
+@override
+_ProduitListViewState createState() => _ProduitListViewState();
 }
 
-class _MyDataTableState extends State<MyDataTable> {
-  late Future<List<Produit>> _produitsFuture;
+class _ProduitListViewState extends State<ProduitListView> {
+late Future<List<Produit>> _produitsFuture;
 
-  @override
-  void initState() {
-    super.initState();
-    _produitsFuture = APIService().getProduit();
-  }
+@override
+void initState() {
+super.initState();
+_produitsFuture = APIService().getProduit();
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 243, 240, 244),
-
-      appBar: AppBar(
-        backgroundColor: Colors.purple,
-        elevation: 0,
-        title: Text("liste des produits"),
-      ),
-      body: FutureBuilder<List<Produit>>(
-        future: _produitsFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<Produit>> snapshot) {
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('Nom')),
-                  DataColumn(label: Text('categorie')),
-                  DataColumn(label: Text('Prix')),
-                  DataColumn(label: Text('Code')),
-                  DataColumn(label: Text('Stock inital')),
-                  DataColumn(label: Text('Stock tompon')),
-                  DataColumn(label: Text('unité de mesure')),
-                  DataColumn(label: Text('')),
-                ],
-                rows: snapshot.data!
-                    .map((produit) => DataRow(cells: [
-                          DataCell(Text(produit.nom)),
-                          DataCell(Text(produit.categorie)),
-                          DataCell(Text(produit.prix.toString())),
-                          DataCell(Text(produit.code.toString())),
-                          DataCell(Text(produit.stockinitial.toString())),
-                          DataCell(Text(produit.stocktompon.toString())),
-                          DataCell(Text(produit.unitedemesure.toString())),
-                          DataCell(
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color.fromARGB(255, 174, 45, 196),
-                                  ),
-                                  child: Text('Modifier'),
-                                  onPressed: () {
-                                    editUserDialog(produit);
-                                  },
-                                ),
-                                SizedBox(width: 8),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                         primary: Color.fromARGB(255, 220, 87, 235),
-
-                                  ),
-                                  child: Text('Supprimer'),
-                                  onPressed: () async {
-                                    bool status = await APIService()
-                                        .deleteProduit(produit.id);
-                                    print('Delete status: $status');
-                                    if (status) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content:
-                                                  Text('produit supprimé')));
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Impossible de supprimer le produit')));
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 243, 240, 244),
+    appBar: AppBar(
+      backgroundColor: Colors.purple,
+      elevation: 0,
+      title: Text("Liste des produits"),
+    ),
+    body: FutureBuilder<List<Produit>>(
+      future: _produitsFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Produit>> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (BuildContext context, int index) {
+                Produit produit = snapshot.data![index];
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          produit.nom,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ]))
-                    .toList(),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("${snapshot.error}"),
-            );
-          }
+                        ),
+                        SizedBox(height: 8),
+                        Text("Catégorie: ${produit.categorie}"),
+                        SizedBox(height: 8),
+                        Text("Prix: ${produit.prix}"),
+                        SizedBox(height: 8),
+                        Text("Code: ${produit.code}"),
+                        SizedBox(height: 8),
+                        Text("Stock initial: ${produit.stockinitial}"),
+                        SizedBox(height: 8),
+                        Text("Stock tampon: ${produit.stocktompon}"),
+                        SizedBox(height: 8),
+                        Text("Unité de mesure: ${produit.unitedemesure}"),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.purple,
+                              ),
+                              child: Text('Modifier'),
+                              onPressed: () {
+                                editUserDialog(produit);
+                              },
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.red,
+                              ),
+                              child: Text('Supprimer'),
+                              onPressed: () async {
+                                bool status =
+                                    await APIService().deleteProduit(produit.id);
+                                print('Delete status: $status');
+                                if (status) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Produit supprimé')),
+                                  );
+                                  setState(() {
+                                    _produitsFuture = APIService().getProduit();
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Impossible de supprimer le produit')),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              });
+        } else {
           return Center(
             child: CircularProgressIndicator(),
           );
-        },
-      ),
-        floatingActionButton: FloatingActionButton(
-    onPressed: (){
-      Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>AddProductScreen()),
-    );
-    },
-    backgroundColor: Colors.purple,
-    child: Icon(Icons.add),
-  ),
-    );
-  }
-
+        }
+      },
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddProductScreen()),
+        );
+      },
+      backgroundColor: Colors.purple,
+      child: Icon(Icons.add),
+    ),
+  );
+}
   void editUserDialog(Produit produit) {
     TextEditingController nomController =
         TextEditingController(text: produit.nom);

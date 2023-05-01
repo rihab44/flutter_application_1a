@@ -6,25 +6,31 @@ class commande {
   late String id;
   late String nomproduit;
   late String typeprojet;
-  late int prix;
+  late int prixunitaire;
   late String dateestime;
+  late int quantite;
   late String nomutilisateur;
+  late int prix;
 
   commande(
     this.id, {
     required this.nomproduit,
     required this.typeprojet,
-    required this.prix,
+    required this.prixunitaire,
     required this.dateestime,
+    required this.quantite,
     required this.nomutilisateur,
+    required this.prix,
   });
   commande.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
     nomproduit = json['nomproduit'];
     typeprojet = json['typeprojet'];
-    prix = json['prix'];
+    prixunitaire = json['prixunitaire'];
     dateestime = json['dateestimé'];
+    quantite = json['quantité'];
     nomutilisateur = json['nomutilisateur'];
+    prix = json['prix'];
   }
 }
 
@@ -68,30 +74,29 @@ class APIService11 {
       status = response.body.isNotEmpty;
     }
     return status;
-  }}
-
-  Future<bool> updatecommande(Map<String, dynamic> commande, String id) async {
-    bool status = false;
-    var url = Uri.parse('http://localhost:3000/updatecommande/$id');
-
-    print('Sending update request to $url with data $commande');
-    var response = await http.post(
-      url,
-      body: jsonEncode(commande),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-    print('Received update response with status code ${response.statusCode}');
-    if (response.statusCode == 200) {
-      status = response.body.isNotEmpty;
-    }
-    return status;
   }
+}
 
+Future<bool> updatecommande(Map<String, dynamic> commande, String id) async {
+  bool status = false;
+  var url = Uri.parse('http://localhost:3000/updatecommande/$id');
+
+  print('Sending update request to $url with data $commande');
+  var response = await http.post(
+    url,
+    body: jsonEncode(commande),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  );
+  print('Received update response with status code ${response.statusCode}');
+  if (response.statusCode == 200) {
+    status = response.body.isNotEmpty;
+  }
+  return status;
+}
 
 class listcomande extends StatefulWidget {
-
   @override
   State<listcomande> createState() => _listcomandeState();
 }
@@ -120,59 +125,65 @@ class _listcomandeState extends State<listcomande> {
             (BuildContext context, AsyncSnapshot<List<commande>> snapshot) {
           if (snapshot.hasData) {
             _totalPrice = 0;
-            List<DataRow> rows = snapshot.data!.map((commande) {
-              _totalPrice += commande.prix;
-              return DataRow(cells: [
-                DataCell(Text(commande.nomproduit)),
-                DataCell(Text(commande.typeprojet)),
-                DataCell(Text(commande.prix.toString())),
-                DataCell(Text(commande.dateestime)),
-                DataCell(Text(commande.nomutilisateur)),
-                DataCell(
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 174, 45, 196),
-                        ),
-                        child: Text('Modifier'),
-                        onPressed: () {
-                          editcommadeDialog(commande);
-                        },
-                      ),
-                      SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 220, 87, 235),
-                        ),
-                        child: Text('Supprimer'),
-                        onPressed: () async {
-                          bool status =
-                              await APIService11().deletecommande(commande.id);
-                          print('Delete status: $status');
-                          if (status) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('commande supprimé')));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    'Impossible de supprimer la commande')));
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ]);
-            }).toList();
+           List<DataRow> rows = snapshot.data!.map((commande) {
+  _totalPrice += commande.prix; // mise à jour du prix total
+  return DataRow(cells: [
+    DataCell(Text(commande.nomproduit)),
+    DataCell(Text(commande.typeprojet)),
+    DataCell(Text(commande.prixunitaire.toString())),
+    DataCell(Text(commande.dateestime)),
+    DataCell(Text(commande.nomutilisateur)),
+    DataCell(Text(commande.prix.toString())), // affichage du prix total
+    DataCell(Text(commande.quantite.toString())),
+    DataCell(
+      Row(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color.fromARGB(255, 174, 45, 196),
+            ),
+            child: Text('Modifier'),
+            onPressed: () {
+              editcommadeDialog(commande);
+            },
+          ),
+          SizedBox(width: 8),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color.fromARGB(255, 220, 87, 235),
+            ),
+            child: Text('Supprimer'),
+            onPressed: () async {
+              bool status =
+                  await APIService11().deletecommande(commande.id);
+              print('Delete status: $status');
+              if (status) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('commande supprimé')));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        'Impossible de supprimer la commande')));
+              }
+              setState(() {});
+            },
+          ),
+        ],
+      ),
+    ),
+  ]);
+}).toList();
+
             rows.add(DataRow(cells: [
               DataCell(Text('Total')),
               DataCell(Text('')),
+              
+              DataCell(Text('')),
+              DataCell(Text('')),
+              DataCell(Text('')),
+              DataCell(Text('')),
               DataCell(Text(_totalPrice.toString())),
-              DataCell(Text('')),
-              DataCell(Text('')),
                DataCell(Text('')),
-
 
             ]));
 
@@ -182,9 +193,14 @@ class _listcomandeState extends State<listcomande> {
                 columns: [
                   DataColumn(label: Text('Nom du produit')),
                   DataColumn(label: Text('type de projet')),
-                  DataColumn(label: Text('prix')),
+                  DataColumn(label: Text('prix unitaire')),
                   DataColumn(label: Text('date estimé')),
                   DataColumn(label: Text('nom utilisateur')),
+
+                  DataColumn(label: Text('prix')),
+                   DataColumn(label: Text('quantité ')),
+
+                                
                   DataColumn(label: Text('')),
                 ],
                 rows: rows,
@@ -208,12 +224,16 @@ class _listcomandeState extends State<listcomande> {
         TextEditingController(text: Commande.nomproduit);
     TextEditingController typeprojetController =
         TextEditingController(text: Commande.typeprojet);
-    TextEditingController prixController =
-        TextEditingController(text: Commande.prix.toString());
+    TextEditingController prixunitaireController =
+        TextEditingController(text: Commande.prixunitaire.toString());
     TextEditingController nomutilisateurController =
         TextEditingController(text: Commande.nomutilisateur);
     TextEditingController dateestimeeController =
         TextEditingController(text: Commande.dateestime);
+         TextEditingController quatiteController =
+        TextEditingController(text: Commande.quantite.toString());
+         TextEditingController prixController =
+        TextEditingController(text: Commande.prix.toString());
 
     showDialog(
         context: context,
@@ -232,8 +252,8 @@ class _listcomandeState extends State<listcomande> {
                   decoration: InputDecoration(hintText: 'type de projet'),
                 ),
                 TextField(
-                  controller: prixController,
-                  decoration: InputDecoration(hintText: 'prix'),
+                  controller: prixunitaireController,
+                  decoration: InputDecoration(hintText: 'prix unitaire'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
@@ -259,7 +279,9 @@ class _listcomandeState extends State<listcomande> {
                   Map<String, dynamic> userToUpdate = {
                     'nomproduit': nomproduitController.text,
                     'typeprojet': typeprojetController.text,
-                    'prix': int.parse(prixController.text),
+                    'prixunitaire': int.parse(prixunitaireController.text),
+                    'quantité' : int.parse(quatiteController.text),
+                    'prix' : int.parse(prixController.text),
                     'nomputilisateur': nomutilisateurController.text,
                     'dateestimee': dateestimeeController.text,
                   };

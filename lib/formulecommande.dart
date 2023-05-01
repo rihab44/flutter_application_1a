@@ -6,26 +6,34 @@ import 'page.dart';
 class commande {
   String nomproduit;
   String typeprojet;
-  int prix;
+  int prixunitaire;
   String dateestime;
+  int quantite;
   String nomutilisateur;
+  int prix;
 
   commande(
     this.nomproduit,
     this.typeprojet,
-    this.prix,
+    this.prixunitaire,
     this.dateestime,
+    this.quantite,
     this.nomutilisateur,
+    this.prix,
   );
-  Map<String, dynamic> toJson() {
+
+ Map<String, dynamic> toJson() {
     return {
       'nomproduit': this.nomproduit,
       'typeprojet': this.typeprojet,
-      'prix': this.prix,
-      'dateestimé': this.dateestime,
+      'prixunitaire': this.prixunitaire,
+      'dateestime': this.dateestime,
+      'quantite': this.quantite,
       'nomutilisateur': this.nomutilisateur,
+      'prix': this.prix,
     };
   }
+
 }
 
 class productservice {
@@ -70,8 +78,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   var _dateestimeController = TextEditingController();
   var _nomutilisateurController = TextEditingController();
+  var _quantiteeController = TextEditingController();
+  late int _prix;
 
   @override
+  void initState() {
+    super.initState();
+    _prix = widget.prixproduit;
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 243, 240, 244),
@@ -80,61 +95,94 @@ class _AddProductScreenState extends State<AddProductScreen> {
         backgroundColor: Colors.purple,
         elevation: 0,
       ),
-     body: Padding(
-  padding: EdgeInsets.all(16.0),
-  child: Form(
-    key: _formKey,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text('Nom du produit :', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(width: 10.0),
-            Text(widget.nomProduitCommande, style: TextStyle(fontSize: 18.0)),
-          ],
-        ),
-        SizedBox(height: 20.0),
-        Row(
-          children: [
-            Text('Type de projet :', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(width: 10.0),
-            Text(widget.typeprojetCommande, style: TextStyle(fontSize: 18.0)),
-          ],
-        ),
-        SizedBox(height: 20.0),
-        Row(
-          children: [
-            Text('Prix :', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(width: 10.0),
-            Text('${widget.prixproduit} ', style: TextStyle(fontSize: 18.0)),
-          ],
-        ),
-        SizedBox(height: 20.0),
-        TextFormField(
-          controller: _nomutilisateurController,
-          decoration: InputDecoration(
-            labelText: 'Nom d\'utilisateur',
-          ),
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Veuillez entrer un nom d\'utilisateur';
-            }
-            return null;
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text('Nom du produit :',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(width: 10.0),
+                  Text(widget.nomProduitCommande,
+                      style: TextStyle(fontSize: 18.0)),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: [
+                  Text('Type de projet :',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(width: 10.0),
+                  Text(widget.typeprojetCommande,
+                      style: TextStyle(fontSize: 18.0)),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: [
+                  Text('Prix unitaire :',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(width: 10.0),
+                  Text('${widget.prixproduit} ',
+                      style: TextStyle(fontSize: 18.0)),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                controller: _nomutilisateurController,
+                decoration: InputDecoration(
+                  labelText: 'Nom d\'utilisateur',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer un nom d\'utilisateur';
+                  }
+                  return null;
                 },
               ),
               SizedBox(height: 20.0),
-        TextFormField(
-          controller: _dateestimeController,
-          decoration: InputDecoration(
-            labelText: 'la date estimée',
-          ),
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Veuillez entrer la date estimée';
-            }
-            return null;
+              TextFormField(
+                controller: _dateestimeController,
+                decoration: InputDecoration(
+                  labelText: 'la date estimée',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer la date estimée';
+                  }
+                  return null;
                 },
+              ),
+              SizedBox(height: 20.0),
+              TextFormField(
+                controller: _quantiteeController,
+                decoration: InputDecoration(
+                  labelText: 'quantité',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer la quantité';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    var quantity = int.tryParse(value) ?? 0;
+                    _prix = widget.prixproduit * quantity;
+                  });
+                },
+              ),
+              SizedBox(height: 20.0),
+              Row(
+                children: [
+                  Text('Prix :', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(width: 10.0),
+                  Text('$_prix', style: TextStyle(fontSize: 18.0)),
+                ],
               ),
               SizedBox(
                 height: 10.0,
@@ -151,19 +199,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           var nomproduit = widget.nomProduitCommande;
 
                           var typeprojet = widget.typeprojetCommande;
-                          var prix = widget.prixproduit;
+                          var prixunitaire = widget.prixproduit;
                           var dateestime = _dateestimeController.text;
                           var nomutilisateur = _nomutilisateurController.text;
-
+                          var quantite = int.parse(_quantiteeController.text);
+                          var prix = _prix;
                           var success = productservice.addProduct(commande(
                             nomproduit,
                             typeprojet,
-                            prix,
+                            prixunitaire,
                             dateestime,
-                            nomutilisateur,
+                            quantite,
+                             nomutilisateur,
+                             prix,
                           ).toJson());
                           print(jsonEncode(commande(
-                                  nomproduit, typeprojet, prix, dateestime, nomutilisateur)
+                                  nomproduit,
+                                  typeprojet,
+                                  prixunitaire,
+                                  dateestime,
+                                  quantite,
+                                  nomutilisateur,
+                                  prix)
                               .toJson()));
 
                           Navigator.push(

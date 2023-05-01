@@ -47,6 +47,7 @@ class page1 extends StatelessWidget {
                       },
                     
                     ),
+                    
 
                    
                     ListTile(
@@ -72,7 +73,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyDataTable() ),
+                  MaterialPageRoute(builder: (context) => ProduitListView() ),
                 );
               },
               splashColor: Colors.purple,

@@ -1,133 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'listutilisateur.dart';
 
 class AdminPage extends StatefulWidget {
-  const AdminPage({Key? key}) : super(key: key);
-
   @override
   _AdminPageState createState() => _AdminPageState();
 }
 
 class _AdminPageState extends State<AdminPage> {
-  final _storage = FlutterSecureStorage();
-  String? _adminEmail;
-  String? _adminPassword;
-  bool _isLoading = true;
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _errorMessage = '';
+
+  void _login() async {
+    final response = await http.post(
+      Uri.parse('http://localhost:3000/admin'),
+      headers: {'email': _emailController.text},
+    );
+    if (response.statusCode == 200) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MyDataTable1()));
+    } else {
+      setState(() {
+        _errorMessage = 'Email ou mot de passe incorrect.';
+      });
+    }
+  }
 
   @override
-  void initState() {
-    super.initState();
-    _getAdminCredentials();
-  }
-
-  Future<void> _storeAdminCredentials(String email, String password) async {
-    await _storage.write(key: 'admin_email', value: email);
-    await _storage.write(key: 'admin_password', value: password);
-  }
-
-  Future<void> _getAdminCredentials() async {
-    _adminEmail = await _storage.read(key: 'admin_email');
-    _adminPassword = await _storage.read(key: 'admin_password');
-
-    print('Admin email: $_adminEmail');
-    print('Admin password: $_adminPassword');
-
-    if (_adminEmail == null || _adminPassword == null) {
-      // L'administrateur n'est pas encore connecté. Nous affichons donc la boîte de dialogue pour qu'il se connecte.
-      _showAdminDialog();
-    } else {
-      // Vérifier si l'utilisateur est un administrateur en appelant votre API `requireAdmin`.
-      final response = await http.get(
-        Uri.parse('http://localhost:3000/admin'),
-        headers: {'Authorization': 'Basic $_adminEmail:$_adminPassword'},
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _isLoading = false;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Vous devez être administrateur pour accéder à cette page'),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _showAdminDialog() async {
-    String? enteredEmail;
-    String? enteredPassword;
-
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Connectez-vous en tant qu\'administrateur'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Connexion'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                onChanged: (value) {
-                  enteredEmail = value;
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer votre adresse email';
+                  }
+                  return null;
                 },
-                decoration: const InputDecoration(hintText: 'Email'),
               ),
-              TextField(
-                onChanged: (value) {
-                  enteredPassword = value;
-                },
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Mot de passe'),
                 obscureText: true,
-                decoration: const InputDecoration(hintText: 'Mot de passe'),
-              ),
-            ],
-          ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Annuler'),
-                onPressed: () {
-                  Navigator.of(context).pop();
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer votre mot de passe';
+                  }
+                  return null;
                 },
               ),
-              TextButton(
-                child: const Text('Connexion'),
-                onPressed: () async {
-                  // Vérifier les informations d'identification de l'administrateur
-                  if (enteredEmail == 'admin' &&
-                      enteredPassword == 'password') {
-                    await _storage.write(
-                        key: 'admin_email', value: enteredEmail!);
-                    await _storage.write(
-                        key: 'admin_password', value: enteredPassword!);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyDataTable1()),
-                    );
-                    setState(() {
-                      _isLoading = false;
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Identifiant ou mot de passe incorrect'),
-                      ),
-                    );
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _login();
                   }
                 },
+                child: Text('Se connecter'),
               ),
+              if (_errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
-          );
-        },
-      );
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold();
-    }
+          ),
+        ),
+      ),
+    );
   }
-
+}
