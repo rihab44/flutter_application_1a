@@ -1,40 +1,74 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Profile {
+  late String id;
+  late String nom;
+  late String email;
+  late int numero;
+
+  Profile({
+    required this.id,
+    required this.nom,
+    required this.email,
+    required this.numero,
+  });
+
+  Profile.fromJson(Map<String, dynamic> json) {
+    id = json['_id'];
+    nom = json['nom'];
+    email = json['email'];
+    numero = json['numero'];
+  }
+}
+
+class APIService4 {
+  Future<Profile> getProfile(String id) async {
+    String apiUrl = 'http://localhost:3000/user/$id';
+    var response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      if (jsonData is Map<String, dynamic>) {
+        return Profile.fromJson(jsonData);
+      } else {
+        throw Exception('Impossible de récupérer les données.');
+      }
+    } else {
+      throw Exception('Impossible de récupérer les données.');
+    }
+  }
+}
 
 class UserProfile extends StatefulWidget {
-  final String userId;
-
-  UserProfile({required this.userId, });
-
   @override
   _UserProfileState createState() => _UserProfileState();
 }
 
 class _UserProfileState extends State<UserProfile> {
-  late Map<String, dynamic> _userProfile;
+  late Future<Profile> _profileFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserProfile();
+    _loadProfile();
   }
 
-  void _fetchUserProfile() async {
-    final response = await http.get(
-      Uri.parse('http://localhost:3000/user/${widget.userId}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      setState(() {
-        _userProfile = jsonDecode(response.body);
-      });
-    } else {
-      throw Exception('Failed to load user profile');
-    }
+  void _loadProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('userId') ?? '';
+    setState(() {
+      _profileFuture = APIService4().getProfile(userId);
+    });
   }
 
   @override
@@ -43,37 +77,40 @@ class _UserProfileState extends State<UserProfile> {
       appBar: AppBar(
         title: Text('User Profile'),
       ),
-      body: _userProfile == null
-          ? Center(
+      body: FutureBuilder<Profile>(
+        future: _profileFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
               child: CircularProgressIndicator(),
-            )
-          : Padding(
+            );
+          }
+          if (snapshot.hasData) {
+            Profile profile = snapshot.data!;
+            return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Name: ${_userProfile['nom']}',
+                    'Name: ${profile.nom}',
                     style: TextStyle(fontSize: 20),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Email: ${_userProfile['email']}',
+                    'Email: ${profile.email}',
                     style: TextStyle(fontSize: 20),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Phone Number: ${_userProfile['numero']}',
+                    'Phone Number: ${profile.numero}',
                     style: TextStyle(fontSize: 20),
                   ),
-                   SizedBox(height: 10),
-                  Text(
-                    'mot de passe: ${_userProfile['password']}',
-                    style: TextStyle(fontSize: 20),
-                  ),
+                  SizedBox(height: 10),
                 ],
               ),
-            ),
-    );
-  }
-}
+            );
+          }
+          return Center(
+ child: CircularProgressIndicator(),
+);}));}}

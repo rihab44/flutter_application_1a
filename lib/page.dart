@@ -8,6 +8,7 @@ import 'listutilisateur.dart';
 import 'comm.dart';
 import 'admin.dart';
 import 'traçeproduit.dart';
+import 'profile.dart';
 class page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,11 +29,11 @@ class page1 extends StatelessWidget {
                   children:<Widget> [
                     ListTile(
                       leading: Icon(Icons.add),
-                      title: Text('ajouter un utulisateur'),
+                      title: Text('voir profile'),
                       onTap: (){
                         Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>ajout()),
+                  MaterialPageRoute(builder: (context) =>UserProfile()),
                 );
                       },
                     ),
@@ -160,7 +161,7 @@ class page1 extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>listcomande()),
+                  MaterialPageRoute(builder: (context) =>ListCommande()),
                 );
               },
               splashColor: Colors.purple,

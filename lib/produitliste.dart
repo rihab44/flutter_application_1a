@@ -167,7 +167,7 @@ Widget build(BuildContext context) {
                               ),
                               child: Text('Modifier'),
                               onPressed: () {
-                                editUserDialog(produit);
+                                editproduitDialog(produit);
                               },
                             ),
                             SizedBox(width: 8),
@@ -222,7 +222,7 @@ Widget build(BuildContext context) {
     ),
   );
 }
-  void editUserDialog(Produit produit) {
+  void editproduitDialog(Produit produit) {
     TextEditingController nomController =
         TextEditingController(text: produit.nom);
     TextEditingController categorieController =

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'listutilisateur.dart';
 
 class AdminPage extends StatefulWidget {
@@ -32,6 +32,8 @@ class _AdminPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         backgroundColor: Colors.purple,
+          elevation: 0,
         title: Text('Connexion'),
       ),
       body: Padding(
@@ -39,7 +41,7 @@ class _AdminPageState extends State<AdminPage> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextFormField(
                 controller: _emailController,
@@ -63,6 +65,9 @@ class _AdminPageState extends State<AdminPage> {
                 },
               ),
               ElevatedButton(
+                 style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 174, 45, 196),
+                      ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _login();

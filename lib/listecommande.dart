@@ -96,12 +96,12 @@ Future<bool> updatecommande(Map<String, dynamic> commande, String id) async {
   return status;
 }
 
-class listcomande extends StatefulWidget {
+class ListCommande extends StatefulWidget {
   @override
-  State<listcomande> createState() => _listcomandeState();
+  State<ListCommande> createState() => _ListCommandeState();
 }
 
-class _listcomandeState extends State<listcomande> {
+class _ListCommandeState extends State<ListCommande> {
   late Future<List<commande>> _commandesFuture;
   int _totalPrice = 0;
 
@@ -111,113 +111,130 @@ class _listcomandeState extends State<listcomande> {
     _commandesFuture = APIService11().getcommande();
   }
 
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 243, 240, 244),
-      appBar: AppBar(
-        backgroundColor: Colors.purple,
-        elevation: 0,
-        title: Text("liste des commandes"),
-      ),
-      body: FutureBuilder<List<commande>>(
-        future: _commandesFuture,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<commande>> snapshot) {
-          if (snapshot.hasData) {
-            _totalPrice = 0;
-           List<DataRow> rows = snapshot.data!.map((commande) {
-  _totalPrice += commande.prix; // mise à jour du prix total
-  return DataRow(cells: [
-    DataCell(Text(commande.nomproduit)),
-    DataCell(Text(commande.typeprojet)),
-    DataCell(Text(commande.prixunitaire.toString())),
-    DataCell(Text(commande.dateestime)),
-    DataCell(Text(commande.nomutilisateur)),
-    DataCell(Text(commande.prix.toString())), // affichage du prix total
-    DataCell(Text(commande.quantite.toString())),
-    DataCell(
-      Row(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 174, 45, 196),
-            ),
-            child: Text('Modifier'),
-            onPressed: () {
-              editcommadeDialog(commande);
-            },
-          ),
-          SizedBox(width: 8),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 220, 87, 235),
-            ),
-            child: Text('Supprimer'),
-            onPressed: () async {
-              bool status =
-                  await APIService11().deletecommande(commande.id);
-              print('Delete status: $status');
-              if (status) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('commande supprimé')));
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        'Impossible de supprimer la commande')));
-              }
-              setState(() {});
-            },
-          ),
-        ],
-      ),
+ Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 243, 240, 244),
+    appBar: AppBar(
+      backgroundColor: Colors.purple,
+      elevation: 0,
+      title: Text("Liste des commandes"),
     ),
-  ]);
-}).toList();
+    body: FutureBuilder<List<commande>>(
+      future: _commandesFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<commande>> snapshot) {
+        if (snapshot.hasData) {
+          _totalPrice = 0;
+          snapshot.data!.forEach((commande) {
+            _totalPrice += commande.prix;
+          });
 
-            rows.add(DataRow(cells: [
-              DataCell(Text('Total')),
-              DataCell(Text('')),
-              
-              DataCell(Text('')),
-              DataCell(Text('')),
-              DataCell(Text('')),
-              DataCell(Text('')),
-              DataCell(Text(_totalPrice.toString())),
-               DataCell(Text('')),
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    commande Commande = snapshot.data![index];
 
-            ]));
-
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(label: Text('Nom du produit')),
-                  DataColumn(label: Text('type de projet')),
-                  DataColumn(label: Text('prix unitaire')),
-                  DataColumn(label: Text('date estimé')),
-                  DataColumn(label: Text('nom utilisateur')),
-
-                  DataColumn(label: Text('prix')),
-                   DataColumn(label: Text('quantité ')),
-
-                                
-                  DataColumn(label: Text('')),
-                ],
-                rows: rows,
+                    return Card(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nom du produit: ${Commande.nomproduit}',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Type de projet: ${Commande.typeprojet}'),
+                            SizedBox(height: 8),
+                            Text('Prix unitaire: ${Commande.prixunitaire}'),
+                            SizedBox(height: 8),
+                            Text('Date estimée: ${Commande.dateestime}'),
+                            SizedBox(height: 8),
+                            Text(
+                                'Nom d\'utilisateur: ${Commande.nomutilisateur}'),
+                            SizedBox(height: 8),
+                            Text('Prix: ${Commande.prix}'),
+                            SizedBox(height: 8),
+                            Text('Quantité: ${Commande.quantite}'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.purple,
+                                  ),
+                                  child: Text('Modifier'),
+                                  onPressed: () {
+                                    editcommadeDialog(Commande);
+                                  },
+                                ),
+                                SizedBox(width: 8),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.red,
+                                  ),
+                                  child: Text('Supprimer'),
+                                  onPressed: () async {
+                                    bool status = await APIService11()
+                                        .deletecommande(Commande.id);
+                                    print('Delete status: $status');
+                                    if (status) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Produit supprimé')),
+                                      );
+                                      setState(() {
+                                        _commandesFuture =
+                                            APIService11().getcommande();
+                                      });
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Impossible de supprimer le produit')),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("${snapshot.error}"),
-            );
-          }
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('prix totale: $_totalPrice'
+                ,style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),),
+              ),
+            ],
+          );
+        } else {
           return Center(
             child: CircularProgressIndicator(),
           );
-        },
-      ),
-    );
-  }
+        }
+      },
+    ),
+  );
+}
 
   void editcommadeDialog(commande Commande) {
     TextEditingController nomproduitController =
@@ -230,9 +247,9 @@ class _listcomandeState extends State<listcomande> {
         TextEditingController(text: Commande.nomutilisateur);
     TextEditingController dateestimeeController =
         TextEditingController(text: Commande.dateestime);
-         TextEditingController quatiteController =
+    TextEditingController quatiteController =
         TextEditingController(text: Commande.quantite.toString());
-         TextEditingController prixController =
+    TextEditingController prixController =
         TextEditingController(text: Commande.prix.toString());
 
     showDialog(
@@ -268,20 +285,26 @@ class _listcomandeState extends State<listcomande> {
             ),
             actions: <Widget>[
               ElevatedButton(
+                 style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 174, 45, 196),
+                      ),
                 child: Text('Annuler'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               ElevatedButton(
+                 style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 174, 45, 196),
+                      ),
                 child: Text('Modifier'),
                 onPressed: () async {
                   Map<String, dynamic> userToUpdate = {
                     'nomproduit': nomproduitController.text,
                     'typeprojet': typeprojetController.text,
                     'prixunitaire': int.parse(prixunitaireController.text),
-                    'quantité' : int.parse(quatiteController.text),
-                    'prix' : int.parse(prixController.text),
+                    'quantité': int.parse(quatiteController.text),
+                    'prix': int.parse(prixController.text),
                     'nomputilisateur': nomutilisateurController.text,
                     'dateestimee': dateestimeeController.text,
                   };
